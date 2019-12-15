@@ -10,7 +10,7 @@ The dataset comes from a [Kaggle competition](https://www.kaggle.com/c/histopath
 In this Kaggle competition, solution models are evaluated on area under the ROC curve between the predicted probability and the observed target on the test set. The ROC curve is a plot of True Positive Rate against False Positive Rate as the threshold probability dividing the positive and negative varies.   The area under the ROC curve (AUC-ROC) represents the performance of a solution model.  An excellent model has the area under the ROC curve close to 1. When the area under the ROC curve is 0.5, the model has no classification capability.  When the area under the ROC curve is close to 0, the model predicts the opposite of the ground truth.
 
 ### Exploratory Data Analysis
-* See implementation in ![exploratory_data_analysis](exploratory_data_analysis.ipynb) and result in ![report](report.pdf) 
+* See implementation in [exploratory_data_analysis](exploratory_data_analysis.ipynb) and result in [report](report.pdf)
 
 
 
