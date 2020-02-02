@@ -41,6 +41,10 @@ Convolutional neural networks are well suited for this binary image classificati
 
 Passing the entire dataset to the neural network for training is not feasible.  We need to divide our dataset into numbers of batches.  Training the neural network with only one epoch may not be enough.  We need a number of epochs to combat underfitting.  If the number of epochs is too large, we may overfit the data.  An optimal number of epochs can be identified when the validation loss stops improving.  Learning rate is another parameter that affects training.  It controls how much our model learns from a training batch.  If the learning rate is low, the training is more reliable, but it takes a lot of time for training. If the learning rate is high, the training may not converge.
 
+### Benchmark
+The benchmark model is a trained CNN from the [Kaggle kernel](https://www.kaggle.com/gomezp/complete-beginner-s-guide-eda-keras-lb-0-93).  Kaggle splits the test data set into public and private. Running the benchmark kernel gives an AUC-ROC score of 0.8749 for the public test set and 0.8890 for the private test set.
+
+
 
 ###	Methodology
 #### 1.  Data Preprocessing
@@ -112,6 +116,51 @@ We implemented [CNN model from scratch](cnn_from_scratch_without_outliers.ipynb)
 | Densenet169 (without outliers)      | 0.9926           | 0.9640            | 0.9594             |
 
  The CNN model from scratch has a poorer performance when the outliers are removed, while the two transfer learning models are insensitive to the outliers.   The pre-trained transfer learning models may have learned the features in the outliers, but the model from scratch are not able to learn them when the outliers are removed.  In what follows, I only discuss the models trained with outliers included.
+
+### Results
+
+#### 1. Model Evaluation and Validation
+Both of the Resnet50 and Densenet169 models (before and after finetuning) perform better than the CNN model from scratch on the public and private test sets. The Densenet169 model before the finetuning has the highest score for the private test set, which is harder than the public test set. We use it as our final model.
+
+Deep learning models act like a black box.  It is hard to evaluate its parameters or weights.  Instead, we evaluate our final deep learning model by its performance on new datasets. The public and private test sets are totally unseen by the final model.  The final model gives an AUC-ROC score of 0.9617 for the public test set and 0.9628 for the private test set, indicating that the model generates well to unseen data.
+
+The final model is robust for small perturbations in training data. In the data preprocessing, we do data augmentation, which takes image perturbations into account. Therefore, the final model should be insensitive to image perturbations.
+
+The final model has a high performance, but it is not perfect. It makes mistakes on a small number of validation images, as the confusion matrix in the following figure shows.  Therefore, one cannot fully trust the model. Instead, this model can be used to assist a human pathologist for tumor detection.
+
+![Confusion matrix](./images/confusion_matrix.png)
+
+
+#### 2. Justification
+The benchmark model gives an AUC-ROC score of 0.8749 for the public test set and 0.8890 for the private test set. Our final model results in a public score of 0.9617 and a private score of 0.9628.  In addition, the benchmark model gives a validation accuracy of 0.8226, while the validation accuracy for our final model is 0.9593.  It is obvious that our final results are stronger than the benchmark results.
+
+A plot of the ROC curve for our final model on the validation set is shown below.  The area under the ROC curve is close to 1, indicating a high performance of the model on the validation set.
+The final model has a high performance on the unseen test sets, indicating that it generates well to new data.  Therefore, our final solution has solved the problem.
+
+![ROC curve](./images/ROC_Curve.png)
+
+
+###	Conclusion
+#### 1. Free-Form Visualization
+The following figure shows the most incorrect and correct samples from the validation set for the Densenet169 model after finetuning. The most incorrect samples help us understand what the model is struggling with. The most correct samples help us understand what the model is good at. If a human pathologist has a good performance on the most incorrect samples but has a poor performance on the most correct samples, the pathologist can make an improvement on tumor detection with the assistance of the model.
+
+![Most incorrect and correct predictions](./images/Most_Incorrect_and_Correct_Predictions.jpg)
+
+
+#### 2. Reflection
+In this project, I explore the training dataset at first, which includes looking at sample images, understanding the distribution of training labels, identifying outliers, and visualizing features of the training data. Second, I do data augmentations such as random rotation, random translation, random brightness, random contrast, and flip images (horizontally and vertically) to improve the training dataset.  Third, I train three deep learning models including one CNN model from scratch and two transfer learning models (i.e., Resnet50 and Densenet169). Fourth, I finetune the two transfer learning models. At last, I examined the influence of the outliers on the performance of the three models.
+
+#### 3. Improvement
+I use a fixed learning rate for the training of the CNN model from scratch.  A better approach is to specify a varying learning rate along the training as implemented by FastAI.
+
+Other transfer learning models such as Inception-v3 and VGG-19 may give better solutions than our final Densenet169 model. An ensemble of different models may result in higher AUC-ROC scores on the public and private test sets.
+
+
+### Acknowledgement
+
+The following two Kaggle kernels helps me a lot on this project.
+1.	https://www.kaggle.com/qitvision/a-complete-ml-pipeline-fast-ai
+2.	https://www.kaggle.com/gomezp/complete-beginner-s-guide-eda-keras-lb-0-93
 
 
 
